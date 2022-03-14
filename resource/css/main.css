@@ -1,0 +1,216 @@
+/* horizontal panel*/
+                
+.panel-container {
+    display: flex;
+    flex-direction: row;
+    border: 1px solid silver;
+    overflow: hidden;
+
+}
+
+.panel-left-code {
+    flex: 0 0 auto;
+    padding: 0px;
+    width: 300px;
+    min-height: 100%;
+    width: 50%;
+    white-space: nowrap;
+    color: white;
+}
+
+.splitter-code {
+    flex: 0 0 auto;
+    width: 18px;
+    background: url(https://raw.githubusercontent.com/RickStrahl/jquery-resizable/master/assets/vsizegrip.png) center center no-repeat #535353;
+    min-height: 200px;
+    cursor: col-resize;
+}
+
+.panel-right-code {
+    flex: 1 1 auto;
+    /* resizable */
+    padding: 0px;
+    width: 50%;
+    height: 100%;
+    background: #eee;
+}
+
+/* vertical panel */
+
+.panel-container-vertical {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 1px solid silver;
+    overflow: hidden;
+}
+
+.panel-top-code {
+    flex: 0 0 auto;
+    /* only manually resize */
+    padding: 0px;
+    width: 100%;
+    white-space: nowrap;
+
+    color: white;
+}
+
+.splitter-horizontal {
+    flex: 0 0 auto;
+    height: 18px;
+    background: url(https://raw.githubusercontent.com/RickStrahl/jquery-resizable/master/assets/hsizegrip.png) center center no-repeat #535353;
+    cursor: row-resize;
+}
+
+.panel-bottom-code {
+    background-color: white;
+    flex: 1 1 auto;
+    /* resizable */
+    padding: 2px;
+    min-height: 200px;
+}
+
+.html-code-editor::after {
+    content: "HTML";
+    color: black;
+    position: absolute;
+    top: 5px;
+    right: 15px;
+    border-radius: 6px;
+    border: 1px solid black;
+    padding: 2px 5px;
+    font-size: 11px;
+    background: #ffc107;
+    font-weight: bold;
+}
+
+.js-code-editor::after {
+    content: "JS";
+    color: black;
+    position: absolute;
+    top: 5px;
+    right: 15px;
+    border-radius: 6px;
+    border: 1px solid black;
+    padding: 2px 5px;
+    font-size: 11px;
+    background: #dc3545;
+    font-weight: bold;
+}
+
+.css-code-editor::after {
+    content: "CSS";
+    color: black;
+    position: absolute;
+    top: 5px;
+    right: 15px;
+    border-radius: 6px;
+    border: 1px solid black;
+    padding: 2px 5px;
+    font-size: 11px;
+    background: #17a2b8;
+    font-weight: bold;
+}
+
+.panel-bottom-code-view {
+    color: black;
+    z-index: 10;
+    position: absolute;
+    top: 5px;
+    right: 15px;
+    border-radius: 6px;
+    padding: 2px 5px;
+    font-size: 11px;
+    background: #82eebc;
+    font-weight: bold;
+}
+
+.panel-bottom-code:hover .panel-bottom-code-view {
+    display: none;
+}
+
+.panel-bottom-code-size {
+    color: black;
+    z-index: 10;
+    position: absolute;
+    top: 5px;
+    right: 15px;
+    border-radius: 6px;
+    padding: 2px 5px;
+    font-size: 11px;
+    background: #82eebc;
+    font-weight: bold;
+    display: none;
+}
+
+.panel-bottom-code:hover .panel-bottom-code-size {
+    display: block;
+}
+
+.display-block {
+    display: block !important;
+}
+
+.cs-col-Ceckbox {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.display-n {
+    display: none;
+}
+
+.result-code-editor-inp-div {
+    padding-left: 30px;
+    width: 100%;
+    height: 40px;
+    display: none;
+}
+.responsible-panel-box{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.result-code-editor-style {
+   
+    width: 95%;
+    background-color: #eeeeee;
+    height: 95%;
+}
+
+.with-100 {
+    width: 100%;
+
+}
+
+.with-0 {
+    width: 0px;
+
+}
+
+#result-code-width-inp {
+    margin-left: 20px;
+    margin-right: 10px;
+    width: 75px;
+    height: 25px;
+    border-radius: 5px;
+    padding-left: 5px;
+}
+#result-code-height-inp
+{
+    margin-left: 10px;
+    width: 75px;
+    height: 25px;
+    border-radius: 5px;
+    padding-left: 5px;
+}
+
+#element-result-code-editor{
+    height: 70%;
+    
+}
