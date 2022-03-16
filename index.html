@@ -22,7 +22,7 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.32.0-dev.20220113/min/vs/editor/editor.main.min.css"
         integrity="sha512-L6IAyZq1gr9Vu+zWnMnu2Tt9M6hzOxua61Z+7HENAHe6gqFOV3FFTH19vF8FjaQle0PvJcOoZ//CnHT4JScC5g=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-  
+
 
     <script src="resource/js/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-migrate-3.0.0.min.js"></script>
@@ -32,7 +32,6 @@
     <script id='kelbetin2' src="resource/js/link.js"></script>
     <script src="resource/js/bootstrap.min.js"></script>
     <script src="resource/js/sa-global.js"></script>
-    <script src="resource/js/sourced-objects.js"></script>
     <script src="resource/js/main.js"></script>
     <script src="https://unpkg.com/monaco-editor@0.8.3/min/vs/loader.js"></script>
 
@@ -42,6 +41,7 @@
     <div id='body_of_toaster' class="position-absolute w-100 d-flex flex-column p-4">
 
     </div>
+
     <div class="row main_body_class " style="margin-top:0vh;">
         <div class="sp sa-navmenu" style="z-index:40000;">
             <div class="sa-hamburger-btn">
@@ -352,25 +352,25 @@
 
             </div>
         </div>
-        <div class="redirectClass h-100" id="mainBodyDivForAll" >
-            <div style="position: relative; background-color: #525596;border-bottom: 1px solid #272B7C;border-top: 1px solid #272B7C;color: #fff;" class="d-flex justify-content-center align-items-center storecard-header-nav-section">
-            
+        <div class="redirectClass h-100 w-100" id="mainBodyDivForAll">
+            <div style="position: relative; background-color: #525596;border-bottom: 1px solid #272B7C;border-top: 1px solid #272B7C;color: #fff;"
+                class="d-flex justify-content-center align-items-center storecard-header-nav-section">
+
                 <div class=" cs-col-Ceckbox">
-                    <div class="mm-col">
-                        <span class="mm-title">Html Mode</span>
+                    <div class="dropdown cs-input-group btn">
+                        <button class="btn" type="button" id="" data-toggle="dropdown" aria-haspopup="true"                          aria-expanded="false">
+                            <i class="far fa-history"></i> History
+                        </button>
+                        <div style="max-height: 270px;" class="dropdown-menu" id="dropdownHistoryList" aria-labelledby="dropdownMenu2" x-placement="bottom-start">
+                            <!-- <button class="dropdown-item" type="button" id="upToDateButtonUSM">HISTORY</button>
+                            <button class="dropdown-item" type="button" id="addNewTaskButton">HISTORY</button>
+                            <button class="dropdown-item" type="button" id="userStoryUserPermission12">HISTORY</button> -->
+                        </div>
                     </div>
-                    <div class="mm-col">
-                        <select class="form-control code-select-picker" id="cs-col-Ceckbox-id" name="" tabindex="null">
-                             
-                            <option value="0">Live Prototype</option>
-                            <option value="1">Manual Html</option>
-                        </select>
-                    </div>
-              
-                       
-                       
+
+
                 </div>
-            
+
                 <div class="d-flex justify-content-center cspagename-col-" style="padding-right:10px;">
                     <div class="mm-col">
                         <span class="mm-title"></span>
@@ -378,7 +378,7 @@
                 </div>
                 <div class="d-flex justify-content-center cs-col-project">
                     <div class="mm-col">
-                        <span class="mm-title">Project</span>
+                        <span class="mm-title">Project:</span>
                     </div>
                     <div class="mm-col">
                         <select class="form-control  projectList_codeground_storycard" data-live-search="true" name=""
@@ -388,7 +388,7 @@
                 </div>
                 <div class="d-flex justify-content-center cs-col-storecard">
                     <div class="mm-col">
-                        <span class="mm-title">Story Card</span>
+                        <span class="mm-title">Story Card:</span>
                     </div>
                     <div class="mm-col">
                         <select class="form-control code-select-picker" name="" data-live-search="true"
@@ -410,7 +410,7 @@
                 </div>
                 <div class="cs-col-storecard-general-setting">
                     <button class="btn ml-1 mr-1 btn-info btn-sm" id="info-code-ground-btn" title="Info">
-                        Info 
+                        Info
                     </button>
                 </div>
                 <div class="cs-col-storecard-general-setting">
@@ -425,7 +425,7 @@
                 </div>
                 <div class="cs-col-storecard-general-setting mr-1">
                     <button class="btn btn-danger btn-sm " id="js-toggle-ground-btn" title="Toggle-js">
-                       <i class="far fa-eye"> </i> JS
+                        <i class="far fa-eye"> </i> JS
                     </button>
                 </div>
                 <div class="cs-col-storecard-general-setting mr-1">
@@ -436,19 +436,19 @@
                 <div class="cs-col-storecard-general-setting mr-1">
                     <button class="btn btn-danger btn-sm " id="css-toggle-ground-btn" title="Toggle-js">
                         <i class="far fa-eye fa-eye-slash"> </i> CSS
-            
+
                     </button>
                 </div>
-            
-            
+
+
             </div>
             <div style="height:calc(100vh - 45px);" class="page-container ">
-            
+
                 <div class="panel-container h-100">
-            
+
                     <div class="panel-left-code">
                         <div class="panel-container-vertical">
-            
+
                             <div style="height: 40%;" class="panel-top-code  editor-frame html-code-editor display-n">
                                 <div class="loading editor" style="display: none;">
                                     <div class="progress progress-striped active">
@@ -456,12 +456,13 @@
                                     </div>
                                 </div>
                                 <div class="w-100 h-100 editor-section-code-gorund" id="html-code-editor">
-            
+
                                 </div>
                             </div>
-            
-            
-                            <div style="height: 60%; position: relative;" class="panel-bottom-code  editor-frame js-code-editor">
+
+
+                            <div style="height: 60%; position: relative;"
+                                class="panel-bottom-code  editor-frame js-code-editor">
                                 <div class="loading editor" style="display: none;">
                                     <div class="progress progress-striped active">
                                         <div class="bar"></div>
@@ -472,13 +473,13 @@
                             </div>
                         </div>
                     </div>
-            
-            
-            
-            
+
+
+
+
                     <div class="panel-right-code ">
                         <div class="panel-container-vertical">
-            
+
                             <div style="height: 45%;" class="panel-top-code  editor-frame css-code-editor display-n">
                                 <div class="loading editor" style="display: none;">
                                     <div class="progress progress-striped active">
@@ -486,46 +487,44 @@
                                     </div>
                                 </div>
                                 <div class="w-100 h-100 editor-section-code-gorund" id="css-code-editor">
-            
+
                                 </div>
                             </div>
-            
+
                             <div style="height: 55%; " class="panel-bottom-code">
                                 <div class="result-code-editor-inp-div">
-                                  <div class="responsible-panel-box">
-                                      
-                                    <select class="" name="res-panel-select" id="res-panel-select" style="margin-left: -20px;">
-                                     <option width="1400" height="700" value="Responsible">Responsible</option>
-                                      <option width="360" height="640" value="Moto">Moto G-4</option>
-                                      <option width="360" height="640" value="galaxy">galaxy S5</option>
-                                      <option width="411" height="731" value="Pixel">Pixel 2</option>
-                                      <option width="411" height="823" value="Pixel-2XL">Pixel 2XL</option>
-                                      <option width="320" height="568" value="Iphone-5/SE">Iphone 5/S</option>
-                                      <option width="375" height="667" value="Iphone-6/7/8">Iphone 6/7/8</option>
-                                      <option width="414" height="736" value="Iphone-6/7/8-PLUS">Iphone 6/7/8 PLUS</option>
-                                      <option width="375" height="812" value="Iphone-X">Iphone X</option>
-                                      <option width="768" height="1024" value="Ipad">Ipad</option>
-                                      <option width="1024" height="1366" value="Ipad-Pro">Ipad Pro</option>
-                                      <option width="540" height="720" value="Surface-Duo">Surface Duo</option>
-                                      <option width="280" height="653" value="Galaxy-Fold">Galaxy Fold</option>
-                                      <option width="1024" height="600" value="Nest-Hub">Nest Hub</option>
-                                      <option width="1280" height="800" value="Nest-Hub-Max">Nest Hub Max</option>
-                                     </select>
-                                  
-                                           
-                                        <input  id="result-code-width-inp" type="text" name="width"> <span>X</span>
-                                        <input   id="result-code-height-inp" type="text" name="height">
-                                           
-                                     
-                                
-                                  </div>  
+                                    <div class="responsible-panel-box">
+
+                                        <select class="" name="res-panel-select" id="res-panel-select"
+                                            style="margin-left: -20px;">
+                                            <option width="1400" height="700" value="Responsible">Responsible</option>
+                                            <option width="360" height="640" value="Moto">Moto G-4</option>
+                                            <option width="360" height="640" value="galaxy">galaxy S5</option>
+                                            <option width="411" height="731" value="Pixel">Pixel 2</option>
+                                            <option width="411" height="823" value="Pixel-2XL">Pixel 2XL</option>
+                                            <option width="320" height="568" value="Iphone-5/SE">Iphone 5/S</option>
+                                            <option width="375" height="667" value="Iphone-6/7/8">Iphone 6/7/8</option>
+                                            <option width="414" height="736" value="Iphone-6/7/8-PLUS">Iphone 6/7/8 PLUS
+                                            </option>
+                                            <option width="375" height="812" value="Iphone-X">Iphone X</option>
+                                            <option width="768" height="1024" value="Ipad">Ipad</option>
+                                            <option width="1024" height="1366" value="Ipad-Pro">Ipad Pro</option>
+                                            <option width="540" height="720" value="Surface-Duo">Surface Duo</option>
+                                            <option width="280" height="653" value="Galaxy-Fold">Galaxy Fold</option>
+                                            <option width="1024" height="600" value="Nest-Hub">Nest Hub</option>
+                                            <option width="1280" height="800" value="Nest-Hub-Max">Nest Hub Max</option>
+                                        </select>
+
+
+                                        <input id="result-code-width-inp" type="text" name="width"> <span>X</span>
+                                        <input id="result-code-height-inp" type="text" name="height">
+
+
+
+                                    </div>
                                 </div>
-                                <button class="panel-bottom-code-size btn btn-sm">Size</button>
-                                <label class="checkmarkcontainer"> 
-                                    <input type="checkbox" checked="true" title="show hidden carrier" id="show_hidden_carrier">
-                                    <span class="checkmark"></span>
-                              </label>
-            
+                                <button class="panel-bottom-code-size btn btn-sm">Size</button>                               
+
                                 <span class="panel-bottom-code-view btn btn-sm">VIEW</span>
                                 <!-- style="
                                     overflow: scroll; 
@@ -538,21 +537,24 @@
                                     width: 1366px;
                                     height: 140vh;
                                 " -->
-                                <div class="m-auto result-code-editor-style" style="overflow: auto;"  id="result-code-editor">
-                                   
-                                </div>
+                                
+                                <iframe src="" frameborder="0" class="iframeCodeGround" id="iframeCodeGround12">
+
+                                </iframe>
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        
+
         </div>
     </div>
 
-   
-    <script >
-          Utility.setParamOnLoad();
+
+    <script>
+        tkn_var = localStorage.getItem('tk');
+        Utility.setParamOnLoad();
         codeGroundPro.init();
     </script>
 </body>

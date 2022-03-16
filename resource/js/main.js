@@ -1,40 +1,151 @@
+var historyObj = {};
 const codeGroundPro = {
-
-    init:function (params) {
+    init: function (params) {       
+        this.getHistory();
         $('.code-select-picker').selectpicker();
-        if (global_var.n_rgstr) {
-            var bgid = Utility.getParamFromUrl('bgid');
-            global_var.current_backlog_id = bgid;
-            loadNameBacklogOrProjectShareURl(bgid);
-            $('.projectList_codeground_storycard').attr('disabled', 'disabled')
-            $('.projectList_codeground_storycard').selectpicker();
-        } else {
-            loadProjectList2SelectboxByClass('projectList_codeground_storycard');
-            if (global_var.current_backlog_id) {
-                var val = global_var.current_backlog_id;
-                getBacklogHTMLBodyByIdCodeGround(val, '');
-                getBacklogJSBodyByIdCodeGround(val, '');
-                getBacklogCSSBodyByIdCodeGround(val, '');
-
-                return
-
+        this.getProjectList($('#project-list-codeground'));
+        if (global_var.current_backlog_id) {
+            var val = global_var.current_backlog_id;
+            getBacklogHTMLBodyByIdCodeGround(val, '');
+            getBacklogJSBodyByIdCodeGround(val, '');
+            getBacklogCSSBodyByIdCodeGround(val, '');
+            return
+        }
+        generateMonacoeditros('html-code-editor', 'editorHTMLGround', 'html', 'vs-dark');
+        generateMonacoeditros('css-code-editor', 'editorCSSGround', 'css', 'vs-dark');
+        generateMonacoeditros('js-code-editor', 'editorJSGround', 'javascript', 'vs-dark');
+    },
+    getProjectList: (el) => {
+        var select = $(el);
+        select.empty();
+        callService("serviceTmgetProjectList", {}, true, function (res) {
+            var obj = res.tbl[0].r;
+            for (var n = 0; n < obj.length; n++) {
+                select.append($('<option></option')
+                    .attr('value', obj[n].id)
+                    .text(obj[n].projectName)
+                )
             }
-            generateMonacoeditros('html-code-editor', 'editorHTMLGround', 'html', 'vs-dark');
-            generateMonacoeditros('css-code-editor', 'editorCSSGround', 'css', 'vs-dark');
-            generateMonacoeditros('js-code-editor', 'editorJSGround', 'javascript', 'vs-dark');
+            if (global_var.current_project_id) {
+                select.val(global_var.current_project_id);
+            }
+            select.trigger('change')
+            select.selectpicker('refresh');
 
+        })
+    },
+    getStoryCardListByProject: (el, id) => {
+        var select = $(el);
+        select.empty();
+        var data = {};
+        data.fkProjectId = id;
+        callService("serviceTmGetBacklogList4Combo", data, true, function (res) {
+            var obj = res.tbl[0].r;
+            for (var n = 0; n < obj.length; n++) {
+                select.append($('<option></option')
+                    .attr('value', obj[n].id)
+                    .text(obj[n].backlogName)
+                )
+            }
+            if (global_var.current_backlog_id) {
+                select.val(global_var.current_backlog_id);
+            }
+            select.selectpicker('refresh');
+        })
+    },
+    setHistory: () => {
+        var hId = $('#storyCardListSelectBox4CodeGround').val();
+        var hName = $('#storyCardListSelectBox4CodeGround option:selected').text();
+        var prName = $('#project-list-codeground').val();
+        var item = {};
+        item.id = hId;
+        item.name = hName;
+        item.prName = prName;
+        historyObj[hId] = item;
+        localStorage.setItem('myHistory', JSON.stringify(historyObj));
+        codeGroundPro.getHistory();
+    },
+    changeHistory: (el) => {
+        var projectVal = $('#project-list-codeground');
+        var stcSelect = $('#storyCardListSelectBox4CodeGround');
+        var pname = $(el).attr('pname');
+        var val = $(el).attr('id');
+
+        global_var.current_backlog_id = val;
+        Utility.addParamToUrl("current_backlog_id", val);
+        getBacklogHTMLBodyByIdCodeGround(val, 'load');
+        getBacklogJSBodyByIdCodeGround(val, 'load');
+        getBacklogCSSBodyByIdCodeGround(val, 'load');
+        if (projectVal.val() != pname) {
+            projectVal.val(pname).trigger('change');
+        } else {
+            stcSelect.val(val);
+            stcSelect.selectpicker('refresh');
+        }
+
+
+    },
+    getHistory: () => {
+        const his = localStorage.getItem('myHistory');
+        if (his) {
+            historyObj = JSON.parse(his);
+        }
+        var droplist = $('#dropdownHistoryList');
+        droplist.html('')
+
+        var list = Object.keys(historyObj)
+        for (let i = 0; i < list.length; i++) {
+            const o = list[i];
+            const el = historyObj[o];
+            droplist.prepend(`
+            <div class='d-flex historyItem'>
+            <div style='height:25px;display:flex;align-items:end;'>
+            <button onclick="codeGroundPro.historyItemDelete(this)" id='${el.id}' class='btn-light'>
+             <i class = "fas fa-trash-alt"> </i>
+            </button>         
+          </div>
+          <div style='height:25px;display:flex;align-items:flex-start;'>
+         <button onclick='codeGroundPro.changeHistory(this)' class="dropdown-item" type="button" pname='${el.prName}' id="${el.id}">${el.name}</button >
+          </div>
+          </div>
+          <hr style='margin: 2px;'>
+           `);
         }
     },
+    historyItemDelete: (el) => {
+        var id = $(el).attr('id')      
+        $(el).closest('.historyItem').remove();        
+        localStorage.removeItem('myHistory', id);    
+        delete historyObj[id];         
+        localStorage.setItem('myHistory', JSON.stringify(historyObj));    
+    }
+
+
 }
-
-
-
 ///// code ground start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+$(document).on("change", '#storyCardListSelectBox4CodeGround', function (e) {
+    codeGroundPro.setHistory(historyObj);
+
+
+
+    var val = $(this).val()
+    global_var.current_backlog_id = val;
+    Utility.addParamToUrl("current_backlog_id", val);
+    getBacklogHTMLBodyByIdCodeGround(val, 'load');
+    getBacklogJSBodyByIdCodeGround(val, 'load');
+    getBacklogCSSBodyByIdCodeGround(val, 'load');
+});
+//project change
+$(document).on('change', '#project-list-codeground', function (evt) {
+
+    var id = $(this).val();
+    Utility.addParamToUrl("current_project_id", id)
+    global_var.current_project_id = id;
+    var el = $('#storyCardListSelectBox4CodeGround');
+    codeGroundPro.getStoryCardListByProject(el, id);
+});
 
 $(document).on('click', '.loadCodeGround', function (evt) {
-
-     
-
 
 });
 
@@ -112,45 +223,9 @@ function generateMonacoeditros(elmId, nameEditor, lang, theme, body, readOnly) {
     });
 }
 
-function loadNameBacklogOrProjectShareURl(backlogId) {
-    var bid = (backlogId) ? backlogId : global_var.current_backlog_id;
-
-    var data = {};
-    data.id = bid;
-    callService('serviceTmGetBacklogCoreInfoByIdNew', data, true, function (res) {
-
-        var cmd = $('#storyCardListSelectBox4CodeGround');
-        cmd.html('');
-        console.log(res);
-        var obj = res.tbl[0].r;
-        for (var n = 0; n < obj.length; n++) {
-            var o = obj[n];
-            if (o.isApi !== '1') {
-                var pname = o.backlogName;
-
-                cmd.closest('.mm-col').html($('<span style="color:rgb(255 255 255 / 70%);" class="pl-2 pr-2">').text(" " + pname));
-            }
-
-            try {
-                var prName = SACore.Project[o.fkProjectId]
-                $('#project-list-codeground')
-                    .closest(".mm-col")
-                    .html($('<span style="color:rgb(255 255 255 / 70%);" class="pl-2 pr-2">').text(" " + prName));
-            } catch (error) {
-
-            }
-
-        }
-        getBacklogHTMLBodyByIdCodeGround(bid, '', o.hasHtml);
-        getBacklogJSBodyByIdCodeGround(bid, '');
-        getBacklogCSSBodyByIdCodeGround(bid, '');
-    })
-}
-
 function getBacklogHTMLBodyByIdCodeGround(bid, trig, isHtml) {
 
     var pid = bid ? bid : global_var.current_backlog_id;
-
     var json = initJSON();
     json.kv.fkBacklogId = pid;
     var that = this;
@@ -164,42 +239,19 @@ function getBacklogHTMLBodyByIdCodeGround(bid, trig, isHtml) {
         async: true,
         success: function (res) {
 
-            isHtml = isHtml ? isHtml : $('#storyCardListSelectBox4CodeGround option:selected').attr("isHtml");
-
-            if (isHtml === '1') {
-                $('#cs-col-Ceckbox-id').val("0");
-                $('#cs-col-Ceckbox-id').selectpicker("refresh");
-
-                try {
-                    if (trig == 'load') {
-                        window.editorHTMLGround.setValue(res.kv.backlogHtml);
-                    } else {
-                        generateMonacoeditros('html-code-editor', 'editorHTMLGround', 'html', 'vs-dark', res.kv.backlogHtml, false);
-                    }
-                } catch (error) {
-                    if (trig == 'load') {
-                        return
-                    }
-                    generateMonacoeditros('html-code-editor', 'editorHTMLGround', 'html', 'vs-dark', "", false);
-
-                }
-                $('#cs-col-Ceckbox-id').val("1");
-                $('#cs-col-Ceckbox-id').selectpicker("refresh");
-            } else {
-
-
-
-                var resTmp = SAInput.toJSONByBacklog(pid);
-                var oldmodal = global_var.current_modal;
-                global_var.current_modal = '';
-                var html = new UserStory().getGUIDesignHTMLPure(resTmp);
-                global_var.current_modal = oldmodal;
+            try {
                 if (trig == 'load') {
-                    window.editorHTMLGround.setValue(html);
+                    window.editorHTMLGround.setValue(res.kv.backlogHtml);
                 } else {
-                    generateMonacoeditros('html-code-editor', 'editorHTMLGround', 'html', 'vs-dark', html, true);
+                    generateMonacoeditros('html-code-editor', 'editorHTMLGround', 'html', 'vs-dark', res.kv.backlogHtml, false);
                 }
+            } catch (error) {
+                if (trig == 'load') {
+                    return;
+                }
+                generateMonacoeditros('html-code-editor', 'editorHTMLGround', 'html', 'vs-dark', "", false);
             }
+
 
         }
     });
@@ -334,43 +386,7 @@ $(document).on("change", '#change-editor-theme-monaco', function (e) {
     })
 
 });
-$(document).on("change", '#cs-col-Ceckbox-id', function (e) {
 
-
-
-    updateUS4ShortChangeDetails($(this).val(), 'hasHtml');
-    if ($(this).val() === '1') {
-        window.editorHTMLGround.updateOptions({
-            readOnly: false
-        })
-    } else {
-        window.editorHTMLGround.updateOptions({
-            readOnly: true
-        })
-    }
-
-    loadBacklogProductionCoreDetailssByIdPost(global_var.current_backlog_id, true);
-
-
-});
-$(document).on("change", '#project-list-codeground', function (e) {
-    Utility.addParamToUrl("current_project_id", $(this).val())
-    global_var.current_project_id = $(this).val();
-    getBacklogListforCodeGround($(this).val());
-
-
-});
-
-$(document).on("change", '#storyCardListSelectBox4CodeGround', function (e) {
-    var val = $(this).val()
-    global_var.current_backlog_id = val;
-    Utility.addParamToUrl("current_backlog_id", val);
-
-    getBacklogHTMLBodyByIdCodeGround(val, 'load');
-
-    getBacklogJSBodyByIdCodeGround(val, 'load');
-    getBacklogCSSBodyByIdCodeGround(val, 'load');
-});
 
 function getIframeBlock(elm) {
     /*   var parts = document.location.href.split("?"); */
@@ -388,27 +404,16 @@ function getIframeBlock(elm) {
 
 function iframeLoaded() {
     try {
-        var pid = global_var.current_backlog_id;
-        var js = window.editorJSGround.getValue();
+        // var pid = global_var.current_backlog_id;
+        // var js = window.editorJSGround.getValue();
 
-        if ($("#cs-col-Ceckbox-id").val() !== '1') {
-            // var html = getBacklogAsHtml(global_var.current_backlog_id, false);
-            var resTmp = SAInput.toJSONByBacklog(pid);
-            var oldmodal = global_var.current_modal;
+        // var html = window.editorHTMLGround.getValue();
+        // var css = window.editorCSSGround.getValue();
+        // var block = getIframeBlockInside(pid, css, js, html);
+        var link = urlGl + "api/get/dwd/html/48edh/" + global_var.current_backlog_id;
+        console.log(link);
+        $("#iframeCodeGround12").attr('src', link);
 
-            global_var.current_modal = $('#show_hidden_carrier').prop('checked') ? 'loadLivePrototype' : '';
-            var html = new UserStory().getGUIDesignHTMLPure(resTmp);
-            global_var.current_modal = oldmodal;
-        } else {
-            var html = window.editorHTMLGround.getValue();
-
-        }
-        var css = window.editorCSSGround.getValue();
-        var block = getIframeBlockInside(pid, css, js, html);
-        $("#result-code-editor").html(block);
-        /*  $("#result-iframe").contents().find('body').html(block +`<script>
-         loadSelectBoxesAfterGUIDesign($("#result").find(".redirectClass"))</script>`); */
-        loadSelectBoxesAfterGUIDesign($("#result-code-editor").find(".redirectClass"));
     } catch (error) {
 
     }
@@ -451,11 +456,11 @@ $(document).on("click", '#save-code-ground-btn', function (e) {
     $('.loading.editor').show();
     var js = window.editorJSGround.getValue();
     var css = window.editorCSSGround.getValue();
-    if ($("#cs-col-Ceckbox-id").val() !== '1') {} else {
-        var html = String(window.editorHTMLGround.getValue());
 
-        insertHtmlSendDbBybacklogId(html);
-    }
+    var html = String(window.editorHTMLGround.getValue());
+
+    insertHtmlSendDbBybacklogId(html);
+
 
     insertJsSendDbBybacklogId(js);
     insertCssSendDbBybacklogId(css);
@@ -470,15 +475,7 @@ function setBacklogAsHtmlCodeGround(backlogId, js, css) {
     if (!backlogId) {
         return;
     }
-    if ($("#cs-col-Ceckbox-id").val() !== '1') {
-        var resTmp = SAInput.toJSONByBacklog(backlogId);
-        var oldmodal = global_var.current_modal;
-        global_var.current_modal = '';
-        var html = new UserStory().getGUIDesignHTMLPure(resTmp);
-        global_var.current_modal = oldmodal;
-    } else {
-        var html = window.editorHTMLGround.getValue();
-    }
+    var html = window.editorHTMLGround.getValue();
     var json = initJSON();
     json.kv.fkBacklogId = backlogId;
     json.kv.backlogHtml = "<style>" + css + "</style>" + html + "<script>" + js + "</script>";
@@ -500,20 +497,60 @@ function setBacklogAsHtmlCodeGround(backlogId, js, css) {
         }
     });
 }
-$(document).on("click", '#info-code-ground-btn', function (e) {
 
+function calStroyCardNew(id, elId, backlogName) {
+    var divId = (elId) ? elId : "body_of_nature";
+    $('#storyCardViewManualModal-body').html(''); //alternative backlog modal oldugu ucun ID-ler tekrarlarni
+
+    $.get("resource/child/storycard.html", function (html_string) {
+        resetAllEditStoryCard();
+        if (!id || id === '-1') {
+            return;
+        }
+        loadBacklogDetailsByIdIfNotExist(id);
+        var fkProjectId = SACore.GetBacklogDetails(id, "fkProjectId");
+        global_var.current_project_id = fkProjectId;
+        var storyCard = $("<div>").append(html_string);
+        $(storyCard).find('#storyCardModalNew').attr("id", 'UserStoryPopupModal-Toggle-new')
+            .removeAttr("style")
+        $("body").prepend(storyCard);
+        $('#UserStoryPopupModal-Toggle-new').modal('show');
+        $('#UserStoryPopupModal-Toggle-modal').empty();
+        loadProjectList2SelectboxByClassWithoutCallAction('projectList_liveprototype_storycard');
+        $('select.projectList_liveprototype_storycard').val(fkProjectId)
+        nav_list_menu_story_card();
+        global_var.current_backlog_id = id;
+        $('#storycard-panel-backlog-id').val(id);
+        var backlogName = SACore.GetCurrentBacklogname();
+        $('#storyCardListSelectBox4StoryCard')
+            .append($('<option>').text(backlogName))
+            .append($('<option>')
+                .val('-2')
+                .text("Load All Story Cards"));
+        $('#storyCardListSelectBox4StoryCard').selectpicker('refresh');
+        getTaskTatisticInfoUserStory(id);
+
+        fillBacklogHistory4View(id, "0");
+        new UserStory().toggleSubmenuStoryCard();
+        //        loadStoryCardBodyInfo();
+
+        loadUsersAsOwner();
+        setStoryCardOwner();
+        setStoryCardCreatedBy();
+    });
+}
+
+$(document).on("click", '#info-code-ground-btn', function (e) {
     calStroyCardNew(global_var.current_backlog_id);
 
 
 });
-$(document).on("click", '#run-code-ground-btn', function (e) {
 
+$(document).on("click", '#run-code-ground-btn', function () {
+    console.log('salasm');
     var elm = $("#result-code-editor");
     elm.find('div').remove();
-
     getIframeBlock(elm);
-
-
 });
 $(window).keydown(function (e) {
     if (global_var.current_modal === 'loadCodeGround') {
@@ -627,16 +664,15 @@ function setHistoryCodeGround(bid, body, type) {
     callApi('21122715084804621887', data, true, function (res) {
 
     })
-}    
-                
+}
 
 
-$('#css-toggle-ground-btn').click(function () {
+$(document).on('click', '#css-toggle-ground-btn', function () {
     $('#css-toggle-ground-btn').children("i").toggleClass("fa-eye-slash")
     $(".css-code-editor").toggleClass('display-n');
 })
 
-$('#html-toggle-ground-btn').click(function () {
+$(document).on('click', '#html-toggle-ground-btn', function () {
     $('#html-toggle-ground-btn').children("i").toggleClass("fa-eye-slash")
     $(".html-code-editor").toggleClass('display-n');
     if ($(".js-code-editor").hasClass("display-n") && $(".html-code-editor").hasClass("display-n")) {
@@ -648,8 +684,8 @@ $('#html-toggle-ground-btn').click(function () {
     }
 })
 
-$('#js-toggle-ground-btn').click(function() {
-     $('#js-toggle-ground-btn').children("i").toggleClass("fa-eye-slash")
+$(document).on('click', '#js-toggle-ground-btn', function () {
+    $('#js-toggle-ground-btn').children("i").toggleClass("fa-eye-slash")
     $(".js-code-editor").toggleClass('display-n');
     if ($(".js-code-editor").hasClass("display-n") && $(".html-code-editor").hasClass("display-n")) {
         $(".panel-right-code").addClass("with-100")
@@ -666,14 +702,13 @@ $(".panel-left-code").resizable({
     resizeHeight: false
 });
 
- $(".panel-top-code").resizable({
+$(".panel-top-code").resizable({
     handles: 's',
     resizeWidth: false
 });
 
 // responsib panel
-
-$(".panel-bottom-code-size").click(function () {
+$(document).on('click', ".panel-bottom-code-size", function () {
     $(".result-code-editor-inp-div").toggleClass("display-block")
     $("#result-code-width-inp").val(1200 + " px")
     $(".panel-right-code").toggleClass("with-100")
@@ -694,38 +729,34 @@ $(".panel-bottom-code-size").click(function () {
         }
     });
 })
-
-
-$(document).on("change","#result-code-width-inp",function(){
-    var with_inp=$("#result-code-width-inp").val() 
+$(document).on("change", "#result-code-width-inp", function () {
+    var with_inp = $("#result-code-width-inp").val()
     $("#result-code-editor").width(with_inp)
 })
 
-$(document).on("change","#result-code-height-inp",function(){
-    var height_inp=$("#result-code-height-inp").val() 
+$(document).on("change", "#result-code-height-inp", function () {
+    var height_inp = $("#result-code-height-inp").val()
     $("#result-code-editor").height(height_inp)
 })
 
-
-
-$(document).on("change","#res-panel-select",function(){
-    var with_selct=$("#res-panel-select > option:selected").attr("width") 
-    var height_select=$("#res-panel-select > option:selected").attr("height") 
+$(document).on("change", "#res-panel-select", function () {
+    var with_selct = $("#res-panel-select > option:selected").attr("width")
+    var height_select = $("#res-panel-select > option:selected").attr("height")
     $("#result-code-editor").width(with_selct)
     $("#result-code-editor").height(height_select)
     $("#result-code-width-inp").val(with_selct)
     $("#result-code-height-inp").val(height_select)
 })
 
-  
 
- /*    $(document).on("mouseup",".panel-left-code.ui-resizable .ui-resizable-e",function() {
-          
-                $(this).css('width','7px').css('left','auto').css('right','-5px');  
-            
-        });
-    $(document).on("mousedown",".panel-left-code.ui-resizable .ui-resizable-e",function() {
+
+/*    $(document).on("mouseup",".panel-left-code.ui-resizable .ui-resizable-e",function() {
+         
+               $(this).css('width','7px').css('left','auto').css('right','-5px');  
            
-                $(this).css('width','100%').css('left','50%').css('right','0');    
-            
-        }); */
+       });
+   $(document).on("mousedown",".panel-left-code.ui-resizable .ui-resizable-e",function() {
+          
+               $(this).css('width','100%').css('left','50%').css('right','0');    
+           
+       }); */

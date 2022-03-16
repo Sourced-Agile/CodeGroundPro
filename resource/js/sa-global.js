@@ -248,33 +248,6 @@ function AJAXCallFeedback(res) {
         throw 'There is/are error(s), message:' + msgError;
     }
 }
-function loadProjectList2SelectboxByClass(className) {
-
-    var cmd = $('select.' + className);
-    cmd.html('');
-    var f = true;
-    var pid = SACore.GetProjectKeys();
-    for (var n = 0; n < pid.length; n++) {
-        var pname = SACore.GetProjectName(pid[n]);
-        var o = $('<option></option')
-            .attr('value', pid[n])
-            .text(pname);
-        if (f) {
-            o.attr("selected", true);
-            f = false;
-        }
-        cmd.append(o);
-    }
-    if (global_var.current_project_id) {
-        cmd.val(global_var.current_project_id);
-    } else if (global_var.current_backlog_id) {
-        var fkProjectId = SACore.GetBacklogDetails(global_var.current_backlog_id, "fkProjectId");
-        cmd.val(fkProjectId);
-    }
-    sortSelectBoxByElement(cmd);
-    cmd.selectpicker('refresh');
-    cmd.change();
-}
 var Toaster = {
     showGeneralError: function () {
         this.showError("System Error Occured!");
